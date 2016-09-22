@@ -30,12 +30,12 @@ class SwiftSynchronizedTests: XCTestCase {
     // it hasn't been incremented by another operation (when the counter isn't one)
 
     func incrementCounter() {
-        counter++
+        counter += 1
     }
 
     func decrementCounterIfPossible() {
         if counter == 1 {
-            counter--
+            counter -= 1
         } else {
             // Another operation has incremented the counter before we got a chance to decrement it
         }
@@ -50,16 +50,16 @@ class SwiftSynchronizedTests: XCTestCase {
 
     func testWithoutSwiftSynchronized() {
 
-        var blockOps = [NSBlockOperation]()
+        var blockOps = [BlockOperation]()
 
         for _ in 0...blockOpCount {
-            let blockOperation = NSBlockOperation() {
+            let blockOperation = BlockOperation() {
                 self.performOperation()
             }
             blockOps.append(blockOperation)
         }
 
-        let operationQ = NSOperationQueue()
+        let operationQ = OperationQueue()
 
         operationQ.addOperations(blockOps, waitUntilFinished: true)
         print(counter)
@@ -72,18 +72,18 @@ class SwiftSynchronizedTests: XCTestCase {
 
     func testWithSwiftSynchronizedExample() {
 
-        var blockOps = [NSBlockOperation]()
+        var blockOps = [BlockOperation]()
 
         for _ in 0...blockOpCount {
-            let blockOperation = NSBlockOperation() {
-                synchronized(self) {
+            let blockOperation = BlockOperation {
+                synchronized(self) { _ in
                     self.performOperation()
                 }
             }
             blockOps.append(blockOperation)
         }
 
-        let operationQ = NSOperationQueue()
+        let operationQ = OperationQueue()
 
         operationQ.addOperations(blockOps, waitUntilFinished: true)
 
@@ -94,12 +94,12 @@ class SwiftSynchronizedTests: XCTestCase {
 
     func testtestWithSwiftSynchronizedReturnExample() {
 
-        var blockOps = [NSBlockOperation]()
+        var blockOps = [BlockOperation]()
 
         var localcounter = 0
 
         for _ in 0...blockOpCount {
-            let blockOperation = NSBlockOperation() {
+            let blockOperation = BlockOperation() {
                 localcounter = synchronized(self) {
                     self.performOperation()
                     return self.counter
@@ -108,7 +108,7 @@ class SwiftSynchronizedTests: XCTestCase {
             blockOps.append(blockOperation)
         }
 
-        let operationQ = NSOperationQueue()
+        let operationQ = OperationQueue()
 
         operationQ.addOperations(blockOps, waitUntilFinished: true)
 
