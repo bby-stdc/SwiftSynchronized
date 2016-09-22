@@ -30,12 +30,12 @@ class SwiftSynchronizedAutoClosureTests: XCTestCase {
     // it hasn't been incremented by another operation (when the counter isn't one)
 
     func incrementCounter() {
-        counter++
+        counter += 1
     }
 
     func decrementCounterIfPossible() {
         if counter == 1 {
-            counter--
+            counter -= 1
         } else {
             // Another operation has incremented the counter before we got a chance to decrement it
         }
@@ -54,16 +54,16 @@ class SwiftSynchronizedAutoClosureTests: XCTestCase {
 
     func testWithSwiftSynchronizedAutoclosureExample() {
 
-        var blockOps = [NSBlockOperation]()
+        var blockOps = [BlockOperation]()
 
         for _ in 0...blockOpCount {
-            let blockOperation = NSBlockOperation() {
+            let blockOperation = BlockOperation() {
                 synchronized(self, action: self.performOperation())
             }
             blockOps.append(blockOperation)
         }
 
-        let operationQ = NSOperationQueue()
+        let operationQ = OperationQueue()
 
         operationQ.addOperations(blockOps, waitUntilFinished: true)
 
@@ -75,17 +75,19 @@ class SwiftSynchronizedAutoClosureTests: XCTestCase {
 
     func testWithSwiftLockExample() {
 
-        var blockOps = [NSBlockOperation]()
+        var blockOps = [BlockOperation]()
         let lock = NSLock()
 
         for _ in 0...blockOpCount {
-            let blockOperation = NSBlockOperation() {
-                lock.performAndWait { self.performOperation() }
+            let blockOperation = BlockOperation {
+                lock.performAndWait { _ in
+                    self.performOperation()
+                }
             }
             blockOps.append(blockOperation)
         }
 
-        let operationQ = NSOperationQueue()
+        let operationQ = OperationQueue()
 
         operationQ.addOperations(blockOps, waitUntilFinished: true)
 
@@ -96,17 +98,19 @@ class SwiftSynchronizedAutoClosureTests: XCTestCase {
 
     func testWithSwiftRecursiveLockExample() {
 
-        var blockOps = [NSBlockOperation]()
+        var blockOps = [BlockOperation]()
         let lock = NSRecursiveLock()
 
         for _ in 0...blockOpCount {
-            let blockOperation = NSBlockOperation() {
-                lock.performAndWait { self.performOperation() }
+            let blockOperation = BlockOperation {
+                lock.performAndWait { _ in
+                    self.performOperation()
+                }
             }
             blockOps.append(blockOperation)
         }
 
-        let operationQ = NSOperationQueue()
+        let operationQ = OperationQueue()
 
         operationQ.addOperations(blockOps, waitUntilFinished: true)
 
@@ -118,17 +122,17 @@ class SwiftSynchronizedAutoClosureTests: XCTestCase {
 
     func testWithSwiftLockAutoclosureExample() {
 
-        var blockOps = [NSBlockOperation]()
+        var blockOps = [BlockOperation]()
         let lock = NSLock()
 
         for _ in 0...blockOpCount {
-            let blockOperation = NSBlockOperation() {
-                lock.performAndWait(self.performOperation())
+            let blockOperation = BlockOperation {
+                lock.performAndWait( self.performOperation())
             }
             blockOps.append(blockOperation)
         }
 
-        let operationQ = NSOperationQueue()
+        let operationQ = OperationQueue()
 
         operationQ.addOperations(blockOps, waitUntilFinished: true)
 
@@ -139,17 +143,17 @@ class SwiftSynchronizedAutoClosureTests: XCTestCase {
 
     func testWithSwiftRecursiveLockAutoclosureExample() {
 
-        var blockOps = [NSBlockOperation]()
+        var blockOps = [BlockOperation]()
         let lock = NSRecursiveLock()
 
         for _ in 0...blockOpCount {
-            let blockOperation = NSBlockOperation() {
+            let blockOperation = BlockOperation() {
                 lock.performAndWait(self.performOperation())
             }
             blockOps.append(blockOperation)
         }
 
-        let operationQ = NSOperationQueue()
+        let operationQ = OperationQueue()
 
         operationQ.addOperations(blockOps, waitUntilFinished: true)
 

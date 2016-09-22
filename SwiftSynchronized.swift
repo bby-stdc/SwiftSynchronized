@@ -37,7 +37,7 @@ import ObjectiveC
 ///    - lockToken: An Objective-C object to protect the critical section of code
 ///    - action: The critical section of code to be protected
 /// - Returns: Result of `action()`
-public func synchronized<ReturnType>(lockToken: AnyObject, @noescape action: () -> ReturnType) -> ReturnType {
+public func synchronized<ReturnType>(_ lockToken: AnyObject, action: () -> ReturnType) -> ReturnType {
     return synchronized(lockToken, action: action())
 }
 
@@ -48,7 +48,7 @@ public func synchronized<ReturnType>(lockToken: AnyObject, @noescape action: () 
 ///    - lockToken: An Objective-C object to protect the critical section of code
 ///    - action: The critical section of code to be protected
 /// - Returns: Result of `action()`
-public func synchronized<ReturnType>(lockToken: AnyObject, @autoclosure action: () -> ReturnType) -> ReturnType {
+public func synchronized<ReturnType>(_ lockToken: AnyObject, action: @autoclosure () -> ReturnType) -> ReturnType {
     defer { objc_sync_exit(lockToken) }
     objc_sync_enter(lockToken)
     return action()
@@ -63,7 +63,7 @@ public protocol LockPerforming: NSLocking {
     /// - Parameters:
     ///    - action: The critical section of code to be protected
     /// - Returns: Result of `action()`
-    func performAndWait<ReturnType>(@noescape action: () -> ReturnType) -> ReturnType
+    func performAndWait<ReturnType>(_ action: () -> ReturnType) -> ReturnType
 
     /// Protects `action` using `lock()` and `unlock()`.
     ///
@@ -71,7 +71,7 @@ public protocol LockPerforming: NSLocking {
     /// - Parameters:
     ///    - action: The critical section of code to be protected
     /// - Returns: Result of `action()`
-    func performAndWait<ReturnType>(@autoclosure action: () -> ReturnType) -> ReturnType
+    func performAndWait<ReturnType>(_ action: @autoclosure () -> ReturnType) -> ReturnType
 }
 
 extension NSLock: LockPerforming { }
@@ -81,14 +81,14 @@ public extension LockPerforming {
     /// Protects `action` using `lock()` and `unlock()`.
     ///
     /// - SeeAlso: `LockPerforming` protocol
-    func performAndWait<ReturnType>(@noescape action: () -> ReturnType) -> ReturnType {
+    func performAndWait<ReturnType>(_ action: () -> ReturnType) -> ReturnType {
         return performAndWait(action())
     }
 
     /// Protects `action` using `lock()` and `unlock()`.
     ///
     /// - SeeAlso: `LockPerforming` protocol
-    func performAndWait<ReturnType>(@autoclosure action: () -> ReturnType) -> ReturnType {
+    func performAndWait<ReturnType>(_ action: @autoclosure () -> ReturnType) -> ReturnType {
         defer { unlock() }
         lock()
         return action()
